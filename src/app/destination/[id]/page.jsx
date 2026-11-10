@@ -1,5 +1,6 @@
 
-import { Suspense } from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 import {
   MapPin,
@@ -8,260 +9,378 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  Sparkles,
 } from "lucide-react";
-
-import Link from "next/link";
 
 import EditDestinationDialog from "@/components/EdditDestinationDaialog";
 import DeleteDestinationButton from "@/components/DeleteDestinationButton";
+import DestinationBookingCard from "@/components/destination-booking-card";
 
-// Loading Component
+// Loading Skeleton
 function DestinationLoading() {
   return (
-    <div className="mx-auto max-w-7xl px-5 py-10">
-      <div className="animate-pulse space-y-5">
-        <div className="h-8 w-40 rounded bg-gray-200" />
-        <div className="h-[300px] w-full rounded-xl bg-gray-200" />
-        <div className="h-8 w-2/3 rounded bg-gray-200" />
-        <div className="h-24 w-full rounded bg-gray-200" />
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl animate-pulse px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-8 h-8 w-40 rounded-lg bg-muted" />
+
+        <div className="h-[350px] rounded-3xl bg-muted md:h-[480px]" />
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-3">
+          <div className="space-y-5 lg:col-span-2">
+            <div className="h-10 w-1/2 rounded bg-muted" />
+            <div className="h-5 w-full rounded bg-muted" />
+            <div className="h-5 w-4/5 rounded bg-muted" />
+          </div>
+
+          <div className="h-80 rounded-2xl bg-muted" />
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
 
-// Destination Details Component
-async function DestinationDetails({ params }) {
+export default async function DestinationDetails({ params }) {
   const { id } = await params;
 
-  const res = await fetch(
-    `http://localhost:8000/destination/${id}`,
-    {
-      cache: "no-store",
-    }
-  );
+  let data = null;
+  let fetchError = null;
 
-  if (!res.ok) {
+  try {
+    const res = await fetch(
+      `http://localhost:8000/destination/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    if (!res.ok) {
+      fetchError = res.status === 404 ? "not-found" : "error";
+    } else {
+      const result = await res.json();
+      data = result?.data ?? result;
+
+      if (!data || typeof data !== "object") {
+        fetchError = "error";
+      }
+    }
+  } catch (error) {
+    console.error("Destination fetch error:", error);
+    fetchError = "error";
+  }
+
+  if (fetchError === "not-found") {
     return (
-      <div className="py-20 text-center">
-        <h2 className="text-2xl font-bold">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center animate-fade-in">
+        <h2 className="text-3xl font-bold text-foreground font-serif">
           Destination Not Found
         </h2>
 
+        <p className="mt-3 text-muted-foreground">
+          The destination you are looking for does not exist.
+        </p>
+
         <Link
           href="/destination"
-          className="mt-4 inline-block text-cyan-600"
+          className="mt-6 flex items-center gap-2 rounded-xl bg-cyan-600 px-6 py-3 font-semibold text-white shadow-xs transition hover:bg-cyan-700 active:scale-95"
         >
+          <ArrowLeft size={18} />
           Back to Destinations
         </Link>
       </div>
     );
   }
 
-  const data = await res.json();
+  if (fetchError === "error") {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center animate-fade-in">
+        <h2 className="text-3xl font-bold text-destructive font-serif">
+          Something went wrong!
+        </h2>
 
-  return (
-    <div className="mx-auto max-w-7xl px-5 py-8">
-
-      {/* Back Button + Edit and Delete */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <p className="mt-3 text-muted-foreground">
+          Unable to load destination details. Please try again.
+        </p>
 
         <Link
           href="/destination"
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-cyan-600"
+          className="mt-6 flex items-center gap-2 rounded-xl bg-cyan-600 px-6 py-3 font-semibold text-white shadow-xs transition hover:bg-cyan-700 active:scale-95"
         >
-          <ArrowLeft size={17} />
+          <ArrowLeft size={18} />
           Back to Destinations
         </Link>
-
-        {/* Edit and Delete Buttons */}
-        <div className="flex items-center gap-3">
-
-          <EditDestinationDialog 
-            destination={data}
-            id={id}
-          />
-
-          <DeleteDestinationButton id={id} />
-
-        </div>
-
       </div>
+    );
+  }
 
-      {/* Destination Image */}
-      <div className="overflow-hidden rounded-2xl">
-        <img
-          src={data.imageUrl}
-          alt={data.name}
-          className="h-[250px] w-full object-cover sm:h-[400px]"
-        />
-      </div>
+  if (!data) {
+    return <DestinationLoading />;
+  }
 
-      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+  const destinationName =
+    data.name || data.title || "Untitled Destination";
 
-        {/* Left Side */}
-        <div className="lg:col-span-2">
+  const destinationImage =
+    data.imageUrl || data.image || "";
 
-          {/* Country */}
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <MapPin size={17} />
-            {data.country}
-          </div>
+  const highlights = Array.isArray(data.highlights)
+    ? data.highlights
+    : [];
 
-          {/* Destination Name */}
-          <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
-            {data.name}
-          </h1>
-
-          {/* Rating and Duration */}
-          <div className="mt-4 flex flex-wrap items-center gap-5">
-
-            <div className="flex items-center gap-2">
-              <Star
-                className="fill-yellow-400 text-yellow-400"
-                size={18}
-              />
-
-              <span className="font-semibold">
-                {data.rating || "4.5"}
-              </span>
-
-              <span className="text-sm text-gray-500">
-                ({data.reviews || 0} reviews)
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <CalendarDays size={17} />
-              {data.duration}
-            </div>
-
-          </div>
-
-          {/* Overview */}
-          <section className="mt-8">
-
-            <h2 className="text-xl font-bold">
-              Overview
-            </h2>
-
-            <p className="mt-3 leading-7 text-gray-500">
-              {data.description}
-            </p>
-
-          </section>
-
-          {/* Highlights */}
-          <section className="mt-8">
-
-            <h2 className="text-xl font-bold">
-              Highlights
-            </h2>
-
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-
-              {[
-                "Luxury accommodation",
-                "Beautiful tourist attractions",
-                "Local cultural experience",
-                "Private travel experience",
-                "Explore local food",
-                "Amazing natural views",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 text-sm text-gray-600"
-                >
-                  <Check
-                    size={17}
-                    className="text-green-500"
-                  />
-                  {item}
-                </div>
-              ))}
-
-            </div>
-
-          </section>
-
-        </div>
-
-        {/* Right Side Booking Card */}
-        <div>
-
-          <div className="sticky top-24 rounded-2xl border bg-white p-6 shadow-sm">
-
-            <p className="text-sm text-gray-500">
-              Starting from
-            </p>
-
-            <h2 className="mt-2 text-3xl font-bold text-cyan-600">
-              ${data.price}
-            </h2>
-
-            <p className="text-sm text-gray-500">
-              Per person
-            </p>
-
-            <div className="my-5 border-t" />
-
-            {/* Departure Date */}
-            <p className="mb-2 text-sm font-medium">
-              Departure Date
-            </p>
-
-            <div className="flex items-center gap-2 rounded-lg border p-3 text-sm">
-              <CalendarDays size={17} />
-
-              {data.departureDate
-                ? new Date(data.departureDate).toLocaleDateString()
-                : "Date not specified"}
-            </div>
-
-            {/* Book Now */}
-            <Link
-              href={`/booking?destinationId=${id}`}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 py-3 font-semibold text-white transition hover:bg-cyan-700"
-            >
-              Book Now
-              <ArrowRight size={17} />
-            </Link>
-
-            {/* Benefits */}
-            <div className="mt-5 space-y-3">
-
-              {[
-                "Free cancellation",
-                "Travel insurance included",
-                "24/7 customer support",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 text-sm text-gray-500"
-                >
-                  <Check
-                    size={16}
-                    className="text-green-500"
-                  />
-                  {item}
-                </div>
-              ))}
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-// Main Page
-export default function DestinationDetailsPage({ params }) {
   return (
-    <Suspense fallback={<DestinationLoading />}>
-      <DestinationDetails params={params} />
-    </Suspense>
+    <main className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
+
+        {/* Top Navigation */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <Link
+            href="/destination"
+            className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-cyan-600 dark:hover:text-cyan-400"
+          >
+            <ArrowLeft
+              size={18}
+              className="transition-transform group-hover:-translate-x-1"
+            />
+            Back to Destinations
+          </Link>
+
+          {/* Edit and Delete */}
+          <div className="flex items-center gap-3">
+            <EditDestinationDialog
+              destination={data}
+              id={id}
+            />
+
+            <DeleteDestinationButton id={id} />
+          </div>
+        </div>
+
+        {/* Hero Image */}
+        <section className="relative overflow-hidden rounded-3xl bg-muted shadow-xl">
+          {destinationImage ? (
+            <div className="relative h-[280px] w-full sm:h-[380px] lg:h-[480px]">
+              <Image
+                src={destinationImage}
+                alt={destinationName}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 1280px"
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div className="flex h-[280px] items-center justify-center text-muted-foreground sm:h-[380px] lg:h-[480px]">
+              No image available
+            </div>
+          )}
+
+          {/* Image Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
+
+          {/* Image Content */}
+          <div className="absolute bottom-0 left-0 p-6 text-white sm:p-10">
+            {data.country && (
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-1.5 text-xs font-semibold backdrop-blur-md">
+                <MapPin size={14} />
+                {data.country}
+              </div>
+            )}
+
+            <h1 className="text-3xl font-bold tracking-tight sm:text-5xl lg:text-6xl font-serif drop-shadow-sm">
+              {destinationName}
+            </h1>
+
+            <p className="mt-3 max-w-xl text-sm text-white/90 sm:text-base leading-relaxed">
+              Discover beautiful places and create unforgettable memories.
+            </p>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
+
+          {/* Left Content */}
+          <div className="space-y-8 lg:col-span-2">
+
+            {/* Destination Overview Card */}
+            <section className="rounded-2xl border border-border/80 bg-card text-card-foreground p-6 shadow-xs sm:p-8">
+
+              {/* Rating and Duration */}
+              <div className="flex flex-wrap items-center gap-5">
+
+                {data.rating != null && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/40">
+                      <Star
+                        size={19}
+                        className="fill-amber-400 text-amber-400"
+                      />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-bold text-foreground">
+                        {data.rating}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        {data.reviews ?? 0} reviews
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {data.duration && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-950/40">
+                      <CalendarDays
+                        size={19}
+                        className="text-cyan-600 dark:text-cyan-400"
+                      />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-bold text-foreground">
+                        {data.duration}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        Trip Duration
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="my-7 border-t border-border/60" />
+
+              {/* Overview */}
+              <div className="mt-2">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-950/40">
+                    <Sparkles
+                      size={21}
+                      className="text-cyan-600 dark:text-cyan-400"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground font-serif">
+                      Overview
+                    </h2>
+
+                    <p className="text-xs text-muted-foreground">
+                      Discover this amazing destination
+                    </p>
+                  </div>
+                </div>
+
+                <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {data.description ||
+                    data.overview ||
+                    "No overview available for this destination."}
+                </p>
+              </div>
+
+              {/* Highlights */}
+              <div className="mt-9 border-t border-border/60 pt-7">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 dark:bg-green-950/40">
+                    <Check
+                      size={21}
+                      className="text-green-600 dark:text-green-400"
+                    />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground font-serif">
+                      Destination Highlights
+                    </h2>
+
+                    <p className="text-xs text-muted-foreground">
+                      What makes this destination special
+                    </p>
+                  </div>
+                </div>
+
+                {highlights.length > 0 ? (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {highlights.map((item, index) => (
+                      <div
+                        key={index}
+                        className="group flex items-start gap-3 rounded-xl border border-border/70 bg-muted/30 p-4 transition duration-300 hover:border-cyan-500/40 hover:bg-muted/60"
+                      >
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-950/50 transition group-hover:bg-cyan-100 dark:group-hover:bg-cyan-950/50">
+                          <Check
+                            size={16}
+                            className="text-green-600 dark:text-green-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400"
+                          />
+                        </div>
+
+                        <p className="pt-1 text-sm font-medium leading-6 text-foreground/90">
+                          {item}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="rounded-xl bg-muted/40 p-5 text-sm text-muted-foreground">
+                    No highlights available for this destination.
+                  </p>
+                )}
+              </div>
+            </section>
+
+            {/* Location Card */}
+            {data.location && (
+              <section className="rounded-2xl border border-border/80 bg-card text-card-foreground p-6 shadow-xs sm:p-8">
+                <div className="mb-4 flex items-center gap-2">
+                  <MapPin
+                    size={21}
+                    className="text-cyan-600 dark:text-cyan-400"
+                  />
+
+                  <h2 className="text-xl font-bold text-foreground font-serif">
+                    Location
+                  </h2>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {data.location}
+                </p>
+              </section>
+            )}
+
+          </div>
+
+          {/* Right Booking Card */}
+          <aside className="lg:col-span-1">
+            <DestinationBookingCard
+              data={data}
+              id={id}
+            />
+          </aside>
+        </div>
+
+        {/* Bottom Navigation */}
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+          <Link
+            href="/destination"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition hover:border-cyan-600 hover:text-cyan-600 dark:hover:border-cyan-400 dark:hover:text-cyan-400 shadow-xs active:scale-95"
+          >
+            <ArrowLeft size={17} />
+            All Destinations
+          </Link>
+
+          <Link
+            href="/add-destination"
+            className="inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-5 py-3 text-sm font-semibold text-white shadow-xs transition hover:bg-cyan-700 active:scale-95"
+          >
+            Add Destination
+            <ArrowRight size={17} />
+          </Link>
+        </div>
+
+      </div>
+    </main>
   );
 }

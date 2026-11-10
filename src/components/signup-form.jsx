@@ -71,8 +71,8 @@ export function SignUpForm() {
     <div className="w-full space-y-6">
 
       {/* Header */}
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">
+      <div className="space-y-2 text-center pb-2">
+        <h1 className="text-3xl font-bold font-serif tracking-tight text-foreground">
           Create an account
         </h1>
 
@@ -88,7 +88,7 @@ export function SignUpForm() {
         <button
           type="button"
           onClick={() => toast.info("Google OAuth is not connected yet.")}
-          className="flex h-11 items-center justify-center gap-2 rounded-md border border-input bg-background text-sm font-medium transition hover:bg-accent"
+          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background text-sm font-medium text-foreground transition-all duration-200 hover:bg-accent active:scale-95"
         >
           <svg viewBox="0 0 48 48" className="size-5" aria-hidden="true">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.1 13.22l7.98 6.19C12.97 13.72 18.03 9.5 24 9.5Z" />
@@ -103,7 +103,7 @@ export function SignUpForm() {
         <button
           type="button"
           onClick={() => toast.info("GitHub OAuth is not connected yet.")}
-          className="flex h-11 items-center justify-center gap-2 rounded-md border border-input bg-background text-sm font-medium transition hover:bg-accent"
+          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background text-sm font-medium text-foreground transition-all duration-200 hover:bg-accent active:scale-95"
         >
           <svg
             viewBox="0 0 24 24"
@@ -119,11 +119,11 @@ export function SignUpForm() {
       {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-border" />
         </div>
 
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-card px-2 text-muted-foreground">
             Or continue with email
           </span>
         </div>
@@ -134,7 +134,7 @@ export function SignUpForm() {
 
         {/* Name */}
         <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium">
+          <label htmlFor="name" className="text-sm font-medium text-foreground">
             Full Name
           </label>
 
@@ -145,13 +145,13 @@ export function SignUpForm() {
             placeholder="John Doe"
             autoComplete="name"
             required
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-12 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         {/* Image URL */}
         <div className="space-y-2">
-          <label htmlFor="image" className="text-sm font-medium">
+          <label htmlFor="image" className="text-sm font-medium text-foreground">
             Profile Image URL
           </label>
 
@@ -160,13 +160,13 @@ export function SignUpForm() {
             name="image"
             type="url"
             placeholder="https://example.com/profile.jpg"
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-12 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         {/* Email */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email
           </label>
 
@@ -177,13 +177,13 @@ export function SignUpForm() {
             placeholder="name@example.com"
             autoComplete="email"
             required
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-12 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         {/* Password */}
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium">
+          <label htmlFor="password" className="text-sm font-medium text-foreground">
             Password
           </label>
 
@@ -192,17 +192,17 @@ export function SignUpForm() {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Enter your password (min. 8 characters)"
               autoComplete="new-password"
               minLength={8}
               required
-              className="h-11 w-full rounded-md border border-input bg-background px-3 pr-11 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="h-12 w-full rounded-xl border border-border bg-background px-3.5 pr-11 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-cyan-500"
             />
 
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -218,7 +218,7 @@ export function SignUpForm() {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-cyan-600 px-4 text-sm font-semibold text-white shadow-xs transition-all duration-200 hover:bg-cyan-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <>
@@ -235,8 +235,8 @@ export function SignUpForm() {
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
-          href="/sign-in"
-          className="font-semibold text-primary underline-offset-4 hover:underline"
+          href="/loging"
+          className="font-semibold text-cyan-600 dark:text-cyan-400 underline-offset-4 hover:underline"
         >
           Sign in
         </Link>

@@ -25,7 +25,7 @@ export default function SignOutButton() {
 
       toast.success("Signed out successfully!");
 
-      router.push("/sign-in");
+      router.push("/loging");
       router.refresh();
     } catch (error) {
       toast.error(error.message || "Something went wrong!");
@@ -39,6 +39,7 @@ export default function SignOutButton() {
       variant="destructive"
       onClick={handleSignOut}
       disabled={loading}
+      className="transition-transform duration-200 hover:scale-[1.02] active:scale-95"
     >
       {loading ? (
         <>

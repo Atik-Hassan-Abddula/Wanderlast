@@ -1,4 +1,7 @@
-import { Josefin_Sans } from "next/font/google";
+
+import { Josefin_Sans, Playfair_Display } from "next/font/google";
+import { Suspense } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -11,6 +14,12 @@ const josefinSans = Josefin_Sans({
   display: "swap",
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair-display",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata = {
   title: "WanderLast",
   description: "Explore the world with WanderLast.",
@@ -18,24 +27,38 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${josefinSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <Navbar />
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${josefinSans.variable} ${playfairDisplay.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider>
+          <Suspense
+            fallback={
+              <div className="h-14 bg-background shadow-sm" />
+            }
+          >
+            <Navbar />
+          </Suspense>
 
-        {children}
+          <main className="flex-1">
+            {children}
+          </main>
 
-        <Footer />
+          <Footer />
 
-        <ToastContainer
-          position="top-right"
-          autoClose={2500}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="colored"
-        />
+          <ToastContainer
+            position="top-right"
+            autoClose={2500}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="colored"
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

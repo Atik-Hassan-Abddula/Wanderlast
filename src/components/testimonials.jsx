@@ -51,15 +51,15 @@ function TestimonialCard({ quote, name, location, photo }) {
   return (
     <article
       data-slot="testimonial-card"
-      className="flex h-full flex-col gap-6 rounded-md border border-border/60 bg-background p-7 sm:flex-row sm:items-stretch"
+      className="flex h-full flex-col justify-between gap-6 rounded-2xl border border-border/80 bg-card p-8 shadow-xs transition-all duration-300 hover:shadow-lg hover:border-cyan-500/30 sm:flex-row sm:items-stretch"
     >
-      <div className="flex min-w-0 flex-1 flex-col">
-        <p className="text-lg leading-normal tracking-tight text-foreground md:text-xl">
+      <div className="flex min-w-0 flex-1 flex-col justify-between">
+        <p className="font-serif text-lg leading-relaxed text-foreground md:text-xl">
           &quot;{quote}&quot;
         </p>
-        <footer className="mt-auto pt-6">
-          <p className="text-sm text-[#1d9cb2]">&mdash; {name}</p>
-          <p className="mt-1 text-xs text-foreground/50">{location}</p>
+        <footer className="mt-6 pt-4 border-t border-border/50">
+          <p className="text-sm font-semibold text-cyan-600 dark:text-cyan-400">&mdash; {name}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{location}</p>
         </footer>
       </div>
 
@@ -69,10 +69,10 @@ function TestimonialCard({ quote, name, location, photo }) {
           alt={`Photo of ${name}`}
           width={176}
           height={176}
-          className="size-40 shrink-0 self-center object-cover sm:self-auto"
+          className="size-36 shrink-0 self-center rounded-xl object-cover sm:self-auto shadow-sm"
         />
       ) : (
-        <div className="flex size-40 shrink-0 self-center items-center justify-center rounded-sm bg-gradient-to-br from-[#bfe8f0] to-[#5fbdd1] text-3xl font-semibold text-white sm:self-auto">
+        <div className="flex size-36 shrink-0 self-center items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-700 text-3xl font-semibold text-white shadow-md sm:self-auto">
           {initials(name)}
         </div>
       )}
@@ -84,16 +84,19 @@ function Testimonials({ className }) {
   return (
     <section
       data-slot="testimonials"
-      className={cn("bg-background py-20 md:py-24", className)}
+      className={cn("bg-background py-20 md:py-24 transition-colors duration-300", className)}
     >
       <div className="mx-auto max-w-6xl px-4">
         <Carousel opts={{ align: "start", loop: true }} className="w-full">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <h2 className="text-4xl font-normal tracking-tight text-balance md:text-5xl">
+              <span className="text-xs font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400">
+                Testimonials
+              </span>
+              <h2 className="mt-2 text-4xl font-normal tracking-tight text-balance text-foreground md:text-5xl">
                 What Travelers Say
               </h2>
-              <p className="mt-3 text-sm text-foreground/60">
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
                 Real experiences from our happy travelers
               </p>
             </div>
@@ -101,17 +104,17 @@ function Testimonials({ className }) {
               <CarouselPrevious
                 variant="outline"
                 size="icon"
-                className="static inset-auto size-10 rounded-full"
+                className="static inset-auto size-11 rounded-full border-border bg-background text-foreground transition-all duration-200 hover:scale-105 hover:bg-accent active:scale-95"
               >
-                <ArrowLeftIcon />
+                <ArrowLeftIcon className="size-4" />
                 <span className="sr-only">Previous slide</span>
               </CarouselPrevious>
               <CarouselNext
                 variant="outline"
                 size="icon"
-                className="static inset-auto size-10 rounded-full"
+                className="static inset-auto size-11 rounded-full border-border bg-background text-foreground transition-all duration-200 hover:scale-105 hover:bg-accent active:scale-95"
               >
-                <ArrowRightIcon />
+                <ArrowRightIcon className="size-4" />
                 <span className="sr-only">Next slide</span>
               </CarouselNext>
             </div>

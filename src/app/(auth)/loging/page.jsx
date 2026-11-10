@@ -86,14 +86,14 @@ const LogingPage = () => {
   };
 
   return (
-    <section className="flex min-h-[80vh] items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md border shadow-xl">
-        <CardHeader className="space-y-2 text-center">
-          <CardTitle className="text-3xl font-bold">
+    <section className="flex min-h-[80vh] items-center justify-center px-4 py-12 bg-background text-foreground transition-colors duration-300">
+      <Card className="w-full max-w-md border border-border/80 bg-card text-card-foreground shadow-2xl rounded-3xl animate-scale-in">
+        <CardHeader className="space-y-2 text-center pb-6">
+          <CardTitle className="text-3xl font-bold font-serif text-foreground">
             Welcome Back!
           </CardTitle>
 
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Sign in to continue your journey with WanderLast.
           </CardDescription>
         </CardHeader>
@@ -104,7 +104,7 @@ const LogingPage = () => {
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-full"
+              className="h-12 w-full rounded-xl border-border bg-background text-foreground hover:bg-accent transition-all duration-200 active:scale-95"
               disabled={!!socialLoading || loading}
               onClick={() => handleSocialLogin("google")}
             >
@@ -140,7 +140,7 @@ const LogingPage = () => {
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-full"
+              className="h-12 w-full rounded-xl border-border bg-background text-foreground hover:bg-accent transition-all duration-200 active:scale-95"
               disabled={!!socialLoading || loading}
               onClick={() => handleSocialLogin("github")}
             >
@@ -162,7 +162,7 @@ const LogingPage = () => {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-border" />
             </div>
 
             <div className="relative flex justify-center text-xs uppercase">
@@ -175,7 +175,7 @@ const LogingPage = () => {
           {/* Email Login */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email" className="text-foreground">Email Address</Label>
 
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -187,13 +187,13 @@ const LogingPage = () => {
                   placeholder="Enter your email"
                   required
                   autoComplete="email"
-                  className="h-12 pl-10"
+                  className="h-12 rounded-xl pl-10 bg-background border-border text-foreground focus:ring-cyan-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-foreground">Password</Label>
 
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -205,7 +205,7 @@ const LogingPage = () => {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className="h-12 pl-10 pr-12"
+                  className="h-12 rounded-xl pl-10 pr-12 bg-background border-border text-foreground focus:ring-cyan-500"
                 />
 
                 <button
@@ -225,8 +225,8 @@ const LogingPage = () => {
 
             <div className="flex justify-end">
               <Link
-                href="/forgot-password"
-                className="text-sm font-medium text-primary hover:underline"
+                href="/loging"
+                className="text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:underline"
               >
                 Forgot password?
               </Link>
@@ -235,7 +235,7 @@ const LogingPage = () => {
             <Button
               type="submit"
               disabled={loading || !!socialLoading}
-              className="h-12 w-full text-base font-semibold"
+              className="h-12 w-full rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold shadow-xs transition-all duration-200 active:scale-95"
             >
               {loading ? (
                 <>
@@ -249,10 +249,10 @@ const LogingPage = () => {
           </form>
 
           <p className="mt-7 text-center text-sm text-muted-foreground">
-       Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/sign-up"
-              className="font-semibold text-primary hover:underline"
+              className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline"
             >
               Create an account
             </Link>

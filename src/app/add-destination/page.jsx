@@ -38,13 +38,13 @@ const initialForm = {
   description: "",
 };
 
-const inputClass = "border-input/50 bg-[#f7f9fc]";
+const inputClass = "border-border bg-background text-foreground transition-all duration-200 focus:border-cyan-600 focus:ring-2 focus:ring-cyan-600/20";
 
 // Reusable Form Field
 function FormField({ label, htmlFor, className, children }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={htmlFor} className="font-semibold">
+      <Label htmlFor={htmlFor} className="font-semibold text-foreground">
         {label}
       </Label>
       {children}
@@ -88,7 +88,7 @@ function AddPackageForm({ className }) {
       setLoading(true);
 
       // POST Request
-      const res = await fetch("http://localhost:8000/add-destination", {
+      const res = await fetch(`https://wander-last-server-dun.vercel.app/add-destination`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +129,7 @@ function AddPackageForm({ className }) {
       data-slot="add-package-form"
       onSubmit={handleSubmit}
       className={cn(
-        "rounded-md bg-background p-6 shadow-sm md:p-10",
+        "rounded-2xl border border-border/80 bg-card text-card-foreground p-6 shadow-sm md:p-10 transition-all duration-300 animate-fade-in",
         className,
       )}
       noValidate
@@ -166,12 +166,12 @@ function AddPackageForm({ className }) {
             <Select value={form.category} onValueChange={setField("category")}>
               <SelectTrigger
                 id="package-category"
-                className={cn("w-full bg-[#f7f9fc]", inputClass)}
+                className={cn("w-full bg-background border-border text-foreground", inputClass)}
               >
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
 
-              <SelectContent>
+              <SelectContent className="bg-card text-card-foreground border-border">
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
@@ -244,14 +244,14 @@ function AddPackageForm({ className }) {
             rows={4}
             value={form.description}
             onChange={setField("description")}
-            className={cn(inputClass, "min-h-28")}
+            className={cn(inputClass, "min-h-28 rounded-xl")}
           />
         </FormField>
       </div>
 
       {/* Error Message */}
       {error && (
-        <p className="mt-4 text-sm text-destructive" role="alert">
+        <p className="mt-4 text-sm text-destructive font-medium" role="alert">
           {error}
         </p>
       )}
@@ -259,7 +259,7 @@ function AddPackageForm({ className }) {
       {/* Success Message */}
       {submitted && (
         <p
-          className="mt-4 flex items-center gap-1.5 text-sm text-[#1d9cb2]"
+          className="mt-4 flex items-center gap-1.5 text-sm text-cyan-600 dark:text-cyan-400 font-medium"
           role="status"
         >
           <CheckIcon className="size-4" />
@@ -268,24 +268,22 @@ function AddPackageForm({ className }) {
       )}
 
       {/* Buttons */}
-      <div className="mt-8 flex items-center justify-end gap-3">
+      <div className="mt-8 flex items-center justify-end gap-3 pt-4 border-t border-border/50">
         <Button
           type="button"
           variant="outline"
           onClick={handleCancel}
           disabled={loading}
-          className="gap-2 text-destructive hover:text-destructive"
+          className="gap-2 rounded-xl border-border text-destructive hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-200 active:scale-95"
         >
           <Trash2Icon className="size-4" />
           Cancel
-        
         </Button>
-        
 
         <Button
           type="submit"
           disabled={loading}
-          className="gap-2 bg-[#1d9cb2] text-white hover:bg-[#17869a]"
+          className="gap-2 rounded-xl bg-cyan-600 text-white shadow-xs transition-all duration-200 hover:bg-cyan-700 active:scale-95"
         >
           <SaveIcon className="size-4" />
           {loading ? "Adding..." : "Add Travel Package"}
@@ -298,11 +296,16 @@ function AddPackageForm({ className }) {
 // Main Page
 export default function AddDestinationPage() {
   return (
-    <main className="min-h-full bg-background">
+    <main className="min-h-full bg-background text-foreground transition-colors duration-300">
       <div className="mx-auto max-w-6xl px-4 pt-12 pb-20 md:pt-16">
-        <h1 className="text-4xl font-normal tracking-tight md:text-5xl">
-          Add New Travel Package
-        </h1>
+        <div className="text-center">
+          <span className="text-xs font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400">
+            Expand the catalog
+          </span>
+          <h1 className="mt-2 text-4xl font-normal tracking-tight text-foreground md:text-5xl font-serif">
+            Add New Travel Package
+          </h1>
+        </div>
 
         <div className="mx-auto mt-10 max-w-xl">
           <AddPackageForm />

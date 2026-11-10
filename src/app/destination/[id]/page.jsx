@@ -18,12 +18,15 @@ async function getDestination(id) {
       throw new Error("BACKEND_URL environment variable is missing");
     }
 
-    const res = await fetch(
-      `${backendUrl.replace(/\/$/, "")}/destination/${encodeURIComponent(id)}`,
-      {
-        cache: "no-store",
-      }
-    );
+    const apiUrl = `${backendUrl.replace(/\/+$/, "")}/destination/${encodeURIComponent(id)}`;
+
+    console.log("Destination API URL:", apiUrl);
+
+    const res = await fetch(apiUrl, {
+      cache: "no-store",
+    });
+
+    console.log("Destination API Status:", res.status);
 
     if (res.status === 404) {
       return null;
@@ -37,7 +40,7 @@ async function getDestination(id) {
         message: errorText,
       });
 
-      throw new Error("Failed to fetch destination");
+      throw new Error(`Backend API failed: ${res.status}`);
     }
 
     const result = await res.json();
@@ -62,7 +65,9 @@ export default async function DestinationDetails({ params }) {
 
   try {
     destination = await getDestination(id);
-  } catch {
+  } catch (error) {
+    console.error("DESTINATION PAGE ERROR:", error);
+
     return (
       <main className="flex min-h-[70vh] items-center justify-center px-4">
         <div className="max-w-md text-center">
@@ -155,10 +160,12 @@ export default async function DestinationDetails({ params }) {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
                   <Clock className="text-blue-600" size={22} />
+
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Duration
                     </p>
+
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {duration || "Not specified"}
                     </p>
@@ -167,10 +174,12 @@ export default async function DestinationDetails({ params }) {
 
                 <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
                   <CalendarDays className="text-blue-600" size={22} />
+
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Departure Date
                     </p>
+
                     <p className="font-semibold text-gray-900 dark:text-white">
                       {departureDate
                         ? new Date(departureDate).toLocaleDateString("en-GB")

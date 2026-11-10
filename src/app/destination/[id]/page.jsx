@@ -24,30 +24,31 @@ async function getDestination(id) {
 
   const apiUrl = `${backendUrl.replace(/\/+$/, "")}/destination/${encodeURIComponent(id)}`;
 
-  console.log("Fetching destination:", apiUrl);
+  console.log("Destination API URL:", apiUrl);
 
   try {
-    const res = await fetch(apiUrl, {
+    const response = await fetch(apiUrl, {
       cache: "no-store",
     });
 
-    if (res.status === 404) {
+    console.log("Destination API Status:", response.status);
+
+    if (response.status === 404) {
       return null;
     }
 
-    if (!res.ok) {
-      const errorText = await res.text();
+    if (!response.ok) {
+      const errorText = await response.text();
 
       console.error("Destination API Error:", {
-        status: res.status,
+        status: response.status,
         response: errorText,
       });
 
-      throw new Error(`Backend API failed with status ${res.status}`);
+      throw new Error(`Backend API failed with status ${response.status}`);
     }
 
-    const result = await res.json();
-
+    const result = await response.json();
     const destination = result?.data ?? result;
 
     if (!destination || !destination._id) {
@@ -97,7 +98,6 @@ export default async function DestinationDetails({ params }) {
     destination = await getDestination(id);
   } catch (error) {
     console.error("DESTINATION PAGE ERROR:", error);
-
     return <ErrorPage />;
   }
 
@@ -122,7 +122,6 @@ export default async function DestinationDetails({ params }) {
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-10 dark:bg-gray-950">
       <div className="mx-auto max-w-6xl">
-
         {/* Back Button */}
         <Link
           href="/destination"
@@ -134,7 +133,6 @@ export default async function DestinationDetails({ params }) {
 
         {/* Destination Content */}
         <div className="overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-gray-900">
-
           {/* Destination Image */}
           <div className="relative h-[280px] w-full sm:h-[400px] lg:h-[500px]">
             {imageUrl ? (
@@ -161,7 +159,6 @@ export default async function DestinationDetails({ params }) {
 
           {/* Details */}
           <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_300px] lg:p-10">
-
             {/* Main Information */}
             <div>
               <div className="mb-4 flex items-center gap-2 text-sm font-medium text-blue-600">
@@ -174,17 +171,19 @@ export default async function DestinationDetails({ params }) {
               </h1>
 
               {/* Rating */}
-              {rating && (
+              {rating != null && (
                 <div className="mt-3 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                   <span className="text-yellow-500">★</span>
                   <span className="font-semibold">{rating}</span>
-                  {reviews && <span>({reviews} reviews)</span>}
+
+                  {reviews != null && (
+                    <span>({reviews} reviews)</span>
+                  )}
                 </div>
               )}
 
               {/* Information Cards */}
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-
                 <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
                   <Clock className="text-blue-600" size={22} />
 
@@ -214,7 +213,6 @@ export default async function DestinationDetails({ params }) {
                     </p>
                   </div>
                 </div>
-
               </div>
 
               {/* Description */}
@@ -231,7 +229,6 @@ export default async function DestinationDetails({ params }) {
 
             {/* Booking Card */}
             <aside className="h-fit rounded-2xl border border-gray-200 p-6 dark:border-gray-700">
-
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Starting From
               </p>
@@ -257,7 +254,6 @@ export default async function DestinationDetails({ params }) {
               <p className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
                 Plan your next adventure with WanderLast.
               </p>
-
             </aside>
           </div>
         </div>
